@@ -4,15 +4,18 @@ import glob
 from essentia.standard import MonoLoader
 import fire
 import tqdm
+import argparse
 
 
 class Processor:
 	def __init__(self):
 		self.fs = 16000
+		self.input = config.input
+		self.output = config.output
 
-	def get_paths(self, data_path):
-		self.files = glob.glob(os.path.join(data_path, 'mtat', 'mp3', '*/*.mp3'))
-		self.npy_path = os.path.join(data_path, 'mtat', 'npy')
+	def get_paths(self):
+		self.files = glob.glob(os.path.join(self.input, 'mtat', 'mp3', '*/*.mp3'))
+		self.npy_path = os.path.join(self.output, 'mtat', 'npy')
 		if not os.path.exists(self.npy_path):
 			os.makedirs(self.npy_path)
 
@@ -22,7 +25,7 @@ class Processor:
 		return x
 
 	def iterate(self, data_path):
-		self.get_paths(data_path)
+		self.get_paths()
 		for fn in tqdm.tqdm(self.files):
 			npy_fn = os.path.join(self.npy_path, fn.split('/')[-1][:-3]+'npy')
 			if not os.path.exists(npy_fn):
@@ -34,6 +37,12 @@ class Processor:
 					print(fn)
 					continue
 
+
 if __name__ == '__main__':
-	p = Processor()
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--input', type=str)
+	parser.add_argument('--output', type=str)
+	config = parser.parse_args()
+
+	p = Processor(config)
 	fire.Fire({'run': p.iterate})
