@@ -6,6 +6,7 @@ import fire
 import tqdm
 import argparse
 import csv
+import pickle
 
 
 class Processor:
@@ -17,7 +18,6 @@ class Processor:
 
 		if config.dataset == 'jamendo':
 			self.keep_structure = 1
-
 		elif config.dataset == 'msd':
 			self.keep_structure = 3
 		else:
@@ -32,8 +32,11 @@ class Processor:
 
 	def get_paths(self):
 		if self.dataset == 'jamendo':
-			paths = self.get_jamendo_paths('./../split/mtg-jamendo/autotagging_top50tags-test.tsv')
+			paths = self.get_jamendo_paths('../split/mtg-jamendo/autotagging_top50tags-test.tsv')
 			self.files = [os.path.join(self.input, path) for path in paths]
+		elif self.dataset == 'msd':
+			ids = [item.decode() for item in pickle.load(open('../split/msd/filtered_list_test.cp', 'rb'), encoding='bytes')]
+			self.files = [os.path.join(self.input, '{}/{}/{}/{}.mp3'.format(msdid[2], msdid[3], msdid[4], msdid)) for msdid in ids]
 		else:
 			self.files = glob.glob(os.path.join(self.input, '*/*.mp3'))
 		self.npy_path = os.path.join(self.output, 'npy')
