@@ -50,9 +50,8 @@ class Processor:
 		for fn in tqdm.tqdm(self.files):
 			fn_with_structure = '/'.join(fn.split('/')[-1-self.keep_structure:])[:-3] + 'npy'
 			npy_fn = os.path.join(self.npy_path, fn_with_structure)
-			print(npy_fn)
 			if not os.path.exists(npy_fn):
-				os.makedirs(fn, exist_ok=True)
+				os.makedirs(npy_fn, exist_ok=True)
 				try:
 					x = self.get_npy(fn)
 					np.save(open(npy_fn, 'wb'), x)
