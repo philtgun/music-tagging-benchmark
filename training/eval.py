@@ -11,6 +11,7 @@ import argparse
 import pickle
 from sklearn import metrics
 import pandas as pd
+from pathlib import Path
 
 import torch
 import torch.nn as nn
@@ -47,6 +48,7 @@ class Predict(object):
         self.is_cuda = torch.cuda.is_available()
         self.build_model()
         self.get_dataset()
+        self.output = config.output
 
     def get_model(self):
         if self.model_type == 'fcn':
@@ -137,8 +139,8 @@ class Predict(object):
         return roc_aucs, pr_aucs
 
     def test(self):
-        roc_auc, pr_auc, loss = self.get_test_score()
-        print('loss: %.4f' % loss)
+        roc_auc, pr_auc = self.get_test_score()
+        # print('loss: %.4f' % loss)
         print('roc_auc: %.4f' % roc_auc)
         print('pr_auc: %.4f' % pr_auc)
 
@@ -173,8 +175,8 @@ class Predict(object):
             x = self.to_var(x)
             y = torch.tensor([ground_truth.astype('float32') for i in range(self.batch_size)]).cuda()
             out = self.model(x)
-            loss = reconst_loss(out, y)
-            losses.append(float(loss.data))
+            # loss = reconst_loss(out, y)
+            # losses.append(float(loss.data))
             out = out.detach().cpu()
 
             # estimate
@@ -183,10 +185,17 @@ class Predict(object):
             gt_array.append(ground_truth)
 
         est_array, gt_array = np.array(est_array), np.array(gt_array)
-        loss = np.mean(losses)
+
+        est_df = pd.DataFrame(est_array, index=self.test_list)
+        est_df.to_csv(Path(self.output) / 'est.csv', header=False)
+
+        gt_df = pd.DataFrame(gt_array, index=self.test_list)
+        gt_df.to_csv(Path(self.output) / 'gt.csv', header=False)
+
+        # loss = np.mean(losses)
 
         roc_auc, pr_auc = self.get_auc(est_array, gt_array)
-        return roc_auc, pr_auc, loss
+        return roc_auc, pr_auc
 
 
 if __name__ == '__main__':
@@ -199,6 +208,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--model_load_path', type=str, default='.')
     parser.add_argument('--data_path', type=str, default='./data')
+    parser.add_argument('--output', type=str, default='./results')
 
     config = parser.parse_args()
 
