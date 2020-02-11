@@ -5,6 +5,7 @@ from essentia.standard import MonoLoader
 import fire
 import tqdm
 import argparse
+import csv
 
 
 class Processor:
@@ -12,10 +13,29 @@ class Processor:
 		self.fs = 16000
 		self.input = config.input
 		self.output = config.output
-		self.keep_structure = config.keep_structure
+		self.dataset = config.dataset
+
+		if config.dataset == 'jamendo':
+			self.keep_structure = 1
+
+		elif config.dataset == 'msd':
+			self.keep_structure = 3
+		else:
+			self.keep_structure = 0
+
+	def get_jamendo_paths(self, tsv_file):
+		with open(tsv_file) as fp:
+			reader = csv.reader(fp, delimiter='\t')
+			next(reader, None)  # skip header
+			paths = [row[3] for row in reader]
+		return paths
 
 	def get_paths(self):
-		self.files = glob.glob(os.path.join(self.input, '*/*.mp3'))
+		if self.dataset == 'jamendo':
+			paths = self.get_jamendo_paths('./../split/mtg-jamendo/autotagging_top50tags-test.tsv')
+			self.files = [os.path.join(self.input, path) for path in paths]
+		else:
+			self.files = glob.glob(os.path.join(self.input, '*/*.mp3'))
 		self.npy_path = os.path.join(self.output, 'npy')
 		if not os.path.exists(self.npy_path):
 			os.makedirs(self.npy_path)
@@ -28,7 +48,7 @@ class Processor:
 	def iterate(self):
 		self.get_paths()
 		for fn in tqdm.tqdm(self.files):
-			fn_with_structure = '/'.join(fn.split('/')[-2-self.keep_structure:-1])[:-3] + 'npy'
+			fn_with_structure = '/'.join(fn.split('/')[-1-self.keep_structure:])[:-3] + 'npy'
 			npy_fn = os.path.join(self.npy_path, fn_with_structure)
 			print(npy_fn)
 			if not os.path.exists(npy_fn):
@@ -45,7 +65,7 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--input', type=str)
 	parser.add_argument('--output', type=str)
-	parser.add_argument('--keep-structure', type=int, default=0)
+	parser.add_argument('--dataset', type=str, choices=['mtat', 'jamendo', 'msd'])
 	config = parser.parse_args()
 
 	p = Processor(config)
