@@ -12,6 +12,7 @@ class Processor:
 		self.fs = 16000
 		self.input = config.input
 		self.output = config.output
+		self.keep_structure = config.keep_structure
 
 	def get_paths(self):
 		self.files = glob.glob(os.path.join(self.input, '*/*.mp3'))
@@ -27,7 +28,8 @@ class Processor:
 	def iterate(self):
 		self.get_paths()
 		for fn in tqdm.tqdm(self.files):
-			npy_fn = os.path.join(self.npy_path, fn.split('/')[-1][:-3]+'npy')
+			fn = '/'.join(fn.split('/')[-2-self.keep_structure:-1])
+			npy_fn = os.path.join(self.npy_path, fn[:-3]+'npy')
 			if not os.path.exists(npy_fn):
 				try:
 					x = self.get_npy(fn)
@@ -42,6 +44,7 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--input', type=str)
 	parser.add_argument('--output', type=str)
+	parser.add_argument('--keep-structure', type=int, default=0)
 	config = parser.parse_args()
 
 	p = Processor(config)
