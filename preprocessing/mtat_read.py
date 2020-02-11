@@ -24,7 +24,7 @@ class Processor:
 		x = loader()
 		return x
 
-	def iterate(self, data_path):
+	def iterate(self):
 		self.get_paths()
 		for fn in tqdm.tqdm(self.files):
 			npy_fn = os.path.join(self.npy_path, fn.split('/')[-1][:-3]+'npy')
@@ -45,4 +45,5 @@ if __name__ == '__main__':
 	config = parser.parse_args()
 
 	p = Processor(config)
-	fire.Fire({'run': p.iterate})
+	# fire.Fire({'run': p.iterate})
+	p.iterate()
