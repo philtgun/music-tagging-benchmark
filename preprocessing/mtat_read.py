@@ -14,8 +14,8 @@ class Processor:
 		self.output = config.output
 
 	def get_paths(self):
-		self.files = glob.glob(os.path.join(self.input, 'mtat', 'mp3', '*/*.mp3'))
-		self.npy_path = os.path.join(self.output, 'mtat', 'npy')
+		self.files = glob.glob(os.path.join(self.input, '*/*.mp3'))
+		self.npy_path = os.path.join(self.output, 'npy')
 		if not os.path.exists(self.npy_path):
 			os.makedirs(self.npy_path)
 
