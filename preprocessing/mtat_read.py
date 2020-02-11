@@ -51,7 +51,7 @@ class Processor:
 			fn_with_structure = '/'.join(fn.split('/')[-1-self.keep_structure:])[:-3] + 'npy'
 			npy_fn = os.path.join(self.npy_path, fn_with_structure)
 			if not os.path.exists(npy_fn):
-				os.makedirs(npy_fn, exist_ok=True)
+				os.makedirs(os.path.dirname(npy_fn), exist_ok=True)
 				try:
 					x = self.get_npy(fn)
 					np.save(open(npy_fn, 'wb'), x)
