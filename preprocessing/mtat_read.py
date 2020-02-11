@@ -28,8 +28,9 @@ class Processor:
 	def iterate(self):
 		self.get_paths()
 		for fn in tqdm.tqdm(self.files):
-			fn_with_structure = '/'.join(fn.split('/')[-2-self.keep_structure:-1])
-			npy_fn = os.path.join(self.npy_path, fn_with_structure[:-3]+'npy')
+			fn_with_structure = '/'.join(fn.split('/')[-2-self.keep_structure:-1]) + 'npy'
+			npy_fn = os.path.join(self.npy_path, fn_with_structure[:-3])
+			print(npy_fn)
 			if not os.path.exists(npy_fn):
 				try:
 					x = self.get_npy(fn)
