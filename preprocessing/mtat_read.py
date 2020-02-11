@@ -8,7 +8,7 @@ import argparse
 
 
 class Processor:
-	def __init__(self):
+	def __init__(self, config):
 		self.fs = 16000
 		self.input = config.input
 		self.output = config.output
