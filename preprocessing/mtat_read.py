@@ -35,7 +35,7 @@ class Processor:
 			paths = self.get_jamendo_paths('../split/mtg-jamendo/autotagging_top50tags-test.tsv')
 			self.files = [os.path.join(self.input, path) for path in paths]
 		elif self.dataset == 'msd':
-			ids = [item.decode() for item in pickle.load(open('../split/msd/filtered_list_test.cp', 'rb'), encoding='bytes')]
+			ids = [item.decode() for item in pickle.load(open('../split/msd/filtered_list_test.cP', 'rb'), encoding='bytes')]
 			self.files = [os.path.join(self.input, '{}/{}/{}/{}.mp3'.format(msdid[2], msdid[3], msdid[4], msdid)) for msdid in ids]
 		else:
 			self.files = glob.glob(os.path.join(self.input, '*/*.mp3'))
