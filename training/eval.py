@@ -43,6 +43,7 @@ class Predict(object):
         self.model_type = config.model_type
         self.model_load_path = config.model_load_path
         self.dataset = config.dataset
+        self.train_dataset = config.train_dataset
         self.data_path = config.data_path
         self.batch_size = config.batch_size
         self.is_cuda = torch.cuda.is_available()
@@ -56,7 +57,7 @@ class Predict(object):
             return Model.FCN()
         elif self.model_type == 'musicnn':
             self.input_length = 3 * 16000
-            return Model.Musicnn(dataset=self.dataset)
+            return Model.Musicnn(dataset=self.train_dataset)
         elif self.model_type == 'crnn':
             self.input_length = 29 * 16000
             return Model.CRNN()
@@ -103,8 +104,8 @@ class Predict(object):
 
     def load(self, filename):
         S = torch.load(filename)
-        if 'spec.mel_scale.fb' in S.keys():
-            S['spec.mel_scale.fb'] = torch.tensor([])
+        # if 'spec.mel_scale.fb' in S.keys():
+        #     S['spec.mel_scale.fb'] = torch.tensor([])
         self.model.load_state_dict(S)
 
     def to_var(self, x):
@@ -203,6 +204,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--num_workers', type=int, default=0)
     parser.add_argument('--dataset', type=str, default='mtat', choices=['mtat', 'msd', 'jamendo'])
+    parser.add_argument('--train-dataset', type=str, default='mtat', choices=['mtat', 'msd', 'jamendo'])
     parser.add_argument('--model_type', type=str, default='fcn',
                         choices=['fcn', 'musicnn', 'crnn', 'sample', 'se', 'boc', 'attention'])
     parser.add_argument('--batch_size', type=int, default=16)
