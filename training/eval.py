@@ -12,6 +12,8 @@ import pickle
 from sklearn import metrics
 import pandas as pd
 from pathlib import Path
+import tracemalloc
+
 
 import torch
 import torch.nn as nn
@@ -171,19 +173,33 @@ class Predict(object):
                 ground_truth = self.id2tag[fn].flatten()
             elif self.dataset == 'jamendo':
                 ground_truth = np.sum(self.mlb.transform(self.file_dict[fn]['tags']), axis=0)
-
+            tracemalloc.start()
+            current, peak = tracemalloc.get_traced_memory()
+            print('first current {}, first peak {}'.format(current, peak))
             # forward
             x = self.to_var(x)
+            current, peak = tracemalloc.get_traced_memory()
+            print('2nd current {}, first peak {}'.format(current, peak))
             y = torch.tensor([ground_truth.astype('float32') for i in range(self.batch_size)]).cuda()
+            current, peak = tracemalloc.get_traced_memory()
+            print('3rd current {}, first peak {}'.format(current, peak))
             out = self.model(x)
+            current, peak = tracemalloc.get_traced_memory()
+            print('4th current {}, first peak {}'.format(current, peak))
             # loss = reconst_loss(out, y)
             # losses.append(float(loss.data))
             out = out.detach().cpu()
+            current, peak = tracemalloc.get_traced_memory()
+            print('5th current {}, first peak {}'.format(current, peak))
 
             # estimate
             estimated = np.array(out).mean(axis=0)
             est_array.append(estimated)
             gt_array.append(ground_truth)
+            current, peak = tracemalloc.get_traced_memory()
+            print('6th current {}, first peak {}'.format(current, peak))
+            tracemalloc.
+
 
         est_array, gt_array = np.array(est_array), np.array(gt_array)
 
