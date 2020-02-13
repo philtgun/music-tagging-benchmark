@@ -150,11 +150,11 @@ class Predict(object):
 
     def get_test_score(self):
         self.model = self.model.eval()
-        est_array = []
-        gt_array = []
+        est_array = np.zeros((50, len(self.test_list)))
+        gt_array = np.zeros((50, len(self.test_list)))
         losses = []
         reconst_loss = nn.BCELoss()
-        for line in tqdm.tqdm(self.test_list):
+        for i, line in enumerate(tqdm.tqdm(self.test_list)):
             if self.dataset == 'mtat':
                 ix, fn = line.split('\t')
             elif self.dataset == 'msd':
@@ -185,13 +185,15 @@ class Predict(object):
 
             # estimate
             estimated = np.array(out).mean(axis=0)
-            est_array.append(estimated)
-            gt_array.append(ground_truth)
+            est_array[i, :] = estimated
+            gt_array[i, :] = ground_truth
+            # est_array.append(estimated)
+            # gt_array.append(ground_truth)
 
             x = None
             gc.collect()
 
-        est_array, gt_array = np.array(est_array), np.array(gt_array)
+        # est_array, gt_array = np.array(est_array), np.array(gt_array)
 
         est_df = pd.DataFrame(est_array, index=self.test_list)
         est_df.to_csv(Path(self.output) / 'est.csv', header=False)
