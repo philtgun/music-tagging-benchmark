@@ -187,6 +187,8 @@ class Predict(object):
                 # estimate
                 estimated = np.array(out).mean(axis=0)
 
+            torch.cuda.empty_cache()
+
             est_array[i, :] = estimated
             gt_array[i, :] = ground_truth
             # est_array.append(estimated)
