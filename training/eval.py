@@ -150,8 +150,8 @@ class Predict(object):
 
     def get_test_score(self):
         self.model = self.model.eval()
-        est_array = np.zeros((50, len(self.test_list)))
-        gt_array = np.zeros((50, len(self.test_list)))
+        est_array = np.zeros((len(self.test_list), 50))
+        gt_array = np.zeros((len(self.test_list), 50))
         losses = []
         reconst_loss = nn.BCELoss()
         for i, line in enumerate(tqdm.tqdm(self.test_list)):
@@ -176,15 +176,17 @@ class Predict(object):
                 ground_truth = np.sum(self.mlb.transform(self.file_dict[fn]['tags']), axis=0)
 
             # forward
-            x = self.to_var(x)
-            y = torch.tensor([ground_truth.astype('float32') for i in range(self.batch_size)]).cuda()
-            out = self.model(x)
-            # loss = reconst_loss(out, y)
-            # losses.append(float(loss.data))
-            out = out.detach().cpu()
+            with torch.no_grad():
+                x = self.to_var(x)
+                # y = torch.tensor([ground_truth.astype('float32') for i in range(self.batch_size)]).cuda()
+                out = self.model(x)
+                # loss = reconst_loss(out, y)
+                # losses.append(float(loss.data))
+                out = out.detach().cpu()
 
-            # estimate
-            estimated = np.array(out).mean(axis=0)
+                # estimate
+                estimated = np.array(out).mean(axis=0)
+
             est_array[i, :] = estimated
             gt_array[i, :] = ground_truth
             # est_array.append(estimated)
