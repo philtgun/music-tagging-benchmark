@@ -3,16 +3,33 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sn
-from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_auc_score, f1_score, cohen_kappa_score, hamming_loss
+from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_auc_score, f1_score, cohen_kappa_score, \
+    hamming_loss
 from sklearn.model_selection import train_test_split
 from sklearn.utils import check_random_state
-from pathlib import Path 
+from pathlib import Path
+import argparse
+
 pd.option_context('display.float_format', '{:0.2f}'.format)
 sn.set(font_scale=2)  # for label size
 
-jamendo_tags = ['alternative', 'ambient', 'atmospheric', 'chillout', 'classical', 'dance', 'downtempo', 'easylistening', 'electronic', 'experimental', 'folk', 'funk', 'hiphop', 'house', 'indie', 'instrumentalpop', 'jazz', 'lounge', 'metal', 'newage', 'orchestral', 'pop', 'popfolk', 'poprock', 'reggae', 'rock', 'soundtrack', 'techno', 'trance', 'triphop', 'world', 'acousticguitar', 'bass', 'computer', 'drummachine', 'drums', 'electricguitar', 'electricpiano', 'guitar', 'keyboard', 'piano', 'strings', 'synthesizer', 'violin', 'voice', 'emotional', 'energetic', 'film', 'happy', 'relaxing']
-MTAT_tags = ['guitar', 'classical', 'slow', 'techno', 'strings', 'drums', 'electronic', 'rock', 'fast', 'piano', 'ambient', 'beat', 'violin', 'vocal', 'synth', 'female', 'indian', 'opera', 'male', 'singing', 'vocals', 'no vocals', 'harpsichord', 'loud', 'quiet', 'flute', 'woman', 'male vocal', 'no vocal', 'pop', 'soft', 'sitar', 'solo', 'man', 'classic', 'choir', 'voice', 'new age', 'dance', 'male voice', 'female vocal', 'beats', 'harp', 'cello', 'no voice', 'weird', 'country', 'metal', 'female voice', 'choral']
-MSD_tags = ['rock', 'pop', 'alternative', 'indie', 'electronic', 'female vocalists', 'dance', '00s', 'alternative rock', 'jazz', 'beautiful', 'metal', 'chillout', 'male vocalists', 'classic rock', 'soul', 'indie rock', 'Mellow', 'electronica', '80s', 'folk', '90s', 'chill', 'instrumental', 'punk', 'oldies', 'blues', 'hard rock', 'ambient', 'acoustic', 'experimental', 'female vocalist', 'guitar', 'Hip-Hop', '70s', 'party', 'country', 'easy listening', 'sexy', 'catchy', 'funk', 'electro', 'heavy metal', 'Progressive rock', '60s', 'rnb', 'indie pop', 'sad', 'House', 'happy']
+jamendo_tags = ['alternative', 'ambient', 'atmospheric', 'chillout', 'classical', 'dance', 'downtempo', 'easylistening',
+                'electronic', 'experimental', 'folk', 'funk', 'hiphop', 'house', 'indie', 'instrumentalpop', 'jazz',
+                'lounge', 'metal', 'newage', 'orchestral', 'pop', 'popfolk', 'poprock', 'reggae', 'rock', 'soundtrack',
+                'techno', 'trance', 'triphop', 'world', 'acousticguitar', 'bass', 'computer', 'drummachine', 'drums',
+                'electricguitar', 'electricpiano', 'guitar', 'keyboard', 'piano', 'strings', 'synthesizer', 'violin',
+                'voice', 'emotional', 'energetic', 'film', 'happy', 'relaxing']
+MTAT_tags = ['guitar', 'classical', 'slow', 'techno', 'strings', 'drums', 'electronic', 'rock', 'fast', 'piano',
+             'ambient', 'beat', 'violin', 'vocal', 'synth', 'female', 'indian', 'opera', 'male', 'singing', 'vocals',
+             'no vocals', 'harpsichord', 'loud', 'quiet', 'flute', 'woman', 'male vocal', 'no vocal', 'pop', 'soft',
+             'sitar', 'solo', 'man', 'classic', 'choir', 'voice', 'new age', 'dance', 'male voice', 'female vocal',
+             'beats', 'harp', 'cello', 'no voice', 'weird', 'country', 'metal', 'female voice', 'choral']
+MSD_tags = ['rock', 'pop', 'alternative', 'indie', 'electronic', 'female vocalists', 'dance', '00s', 'alternative rock',
+            'jazz', 'beautiful', 'metal', 'chillout', 'male vocalists', 'classic rock', 'soul', 'indie rock', 'Mellow',
+            'electronica', '80s', 'folk', '90s', 'chill', 'instrumental', 'punk', 'oldies', 'blues', 'hard rock',
+            'ambient', 'acoustic', 'experimental', 'female vocalist', 'guitar', 'Hip-Hop', '70s', 'party', 'country',
+            'easy listening', 'sexy', 'catchy', 'funk', 'electro', 'heavy metal', 'Progressive rock', '60s', 'rnb',
+            'indie pop', 'sad', 'House', 'happy']
 
 
 def plot_output_coocurances(model_output_rounded, output_path, LABELS_LIST):
@@ -31,6 +48,7 @@ def plot_output_coocurances(model_output_rounded, output_path, LABELS_LIST):
     sn.heatmap(coocurrances, annot=True, annot_kws={"size": 24}, fmt='.0f', cmap=cmap);
     plt.savefig(output_path + ".pdf", format="pdf")
     plt.savefig(output_path + ".png")
+
 
 def plot_false_netgatives_confusion_matrix(model_output_rounded, groundtruth, output_path, LABELS_LIST):
     # Getting false negatives coocuarances
@@ -51,6 +69,7 @@ def plot_false_netgatives_confusion_matrix(model_output_rounded, groundtruth, ou
     sn.heatmap(FN_coocurrances, annot=True, annot_kws={"size": 24}, fmt='.0f', cmap=cmap);
     plt.savefig(output_path + ".pdf", format="pdf")
     plt.savefig(output_path + ".png")
+
 
 def plot_true_poisitve_vs_all_positives(model_output_rounded, groundtruth, output_path, LABELS_LIST):
     # Creating a plot of true positives vs all positives
@@ -73,6 +92,7 @@ def plot_true_poisitve_vs_all_positives(model_output_rounded, groundtruth, outpu
             true_positives_ratio_perclass.mean()))
     plt.savefig(output_path + ".pdf", format="pdf")
     plt.savefig(output_path + ".png")
+
 
 def create_analysis_report(model_output, groundtruth, output_path, LABELS_LIST, validation_output=None,
                            validation_groundtruth=None):
@@ -113,7 +133,8 @@ def create_analysis_report(model_output, groundtruth, output_path, LABELS_LIST, 
     f1_perlabel = f1_score(groundtruth, model_output_rounded, average=None)
     kappa_perlabel = [cohen_kappa_score(groundtruth[:, x], model_output_rounded[:, x]) for x in range(len(LABELS_LIST))]
     results_df = results_df.append(
-        pd.DataFrame([auc_roc_per_label,recall_perlabel, precision_perlabel, f1_perlabel, kappa_perlabel], columns=LABELS_LIST))
+        pd.DataFrame([auc_roc_per_label, recall_perlabel, precision_perlabel, f1_perlabel, kappa_perlabel],
+                     columns=LABELS_LIST))
     results_df.index = ['Ratio of positive samples', 'Model accuracy', 'True positives ratio',
                         'True negatives ratio', "AUC", "Recall", "Precision", "f1-score", "Kappa score"]
 
@@ -132,7 +153,8 @@ def create_analysis_report(model_output, groundtruth, output_path, LABELS_LIST, 
         f1_array = np.zeros((len(LABELS_LIST), len(thresholds)))
         for idx, label in enumerate(LABELS_LIST):
             f1_array[idx, :] = [
-                f1_score(validation_groundtruth[:, idx], np.clip(np.round(validation_output[:, idx] - threshold + 0.5), 0, 1))
+                f1_score(validation_groundtruth[:, idx],
+                         np.clip(np.round(validation_output[:, idx] - threshold + 0.5), 0, 1))
                 for threshold in thresholds]
         threshold_arg = np.argmax(f1_array, axis=1)
         threshold_per_class = thresholds[threshold_arg]
@@ -149,7 +171,8 @@ def create_analysis_report(model_output, groundtruth, output_path, LABELS_LIST, 
         # Applying thresholds optimized per class
         model_output_rounded = np.zeros_like(model_output)
         for idx, label in enumerate(LABELS_LIST):
-            model_output_rounded[:, idx] = np.clip(np.round(model_output[:, idx] - threshold_per_class[idx] + 0.5), 0, 1)
+            model_output_rounded[:, idx] = np.clip(np.round(model_output[:, idx] - threshold_per_class[idx] + 0.5), 0,
+                                                   1)
 
         accuracies_perclass = sum(model_output_rounded == groundtruth) / len(groundtruth)
         # Getting the true positive rate perclass
@@ -169,13 +192,13 @@ def create_analysis_report(model_output, groundtruth, output_path, LABELS_LIST, 
         kappa_perlabel = [cohen_kappa_score(groundtruth[:, x], model_output_rounded[:, x]) for x in
                           range(len(LABELS_LIST))]
         results_df = results_df.append(
-            pd.DataFrame([auc_roc_per_label, precision_perlabel, recall_perlabel, f1_perlabel,kappa_perlabel],
+            pd.DataFrame([auc_roc_per_label, precision_perlabel, recall_perlabel, f1_perlabel, kappa_perlabel],
                          columns=LABELS_LIST))
         results_df.index = ['Ratio of positive samples', 'Model accuracy', 'True positives ratio',
-                            'True negatives ratio', "AUC", "Precision", "Recall", "f1-score",  "Kappa score",
+                            'True negatives ratio', "AUC", "Precision", "Recall", "f1-score", "Kappa score",
                             'Optimized model accuracy', 'Optimized true positives ratio',
                             'Optimized true negatives ratio', "Optimized AUC",
-                            "Optimized precision", "Optimized recall", "Optimized f1-score",  "Optimized Kappa score"]
+                            "Optimized precision", "Optimized recall", "Optimized f1-score", "Optimized Kappa score"]
 
         # Creating evaluation plots
         plot_true_poisitve_vs_all_positives(model_output_rounded, groundtruth,
@@ -189,6 +212,7 @@ def create_analysis_report(model_output, groundtruth, output_path, LABELS_LIST, 
     results_df['average'] = results_df.mean(numeric_only=True, axis=1)
     results_df.T.to_csv(os.path.join(output_path, "results_report.csv"), float_format="%.2f")
     return results_df
+
 
 def evaluate_model(test_pred_prob, test_classes, evaluation_file_path):
     """
@@ -219,62 +243,79 @@ def evaluate_model(test_pred_prob, test_classes, evaluation_file_path):
     print("saving results to disk")
     return accuracy, auc_roc, hamming_error
 
+
 def run_evaluation(experiment_path, train_dataset, test_dataset):
-	"""
-	Use this to run the evaluation on the predictions and the groundtruth. The experiment path is expected
-	to contain two files 'est.csv' and 'gt.csv'. All the results and figures will also be saved in the same 
-	path
+    """
+    Use this to run the evaluation on the predictions and the groundtruth. The experiment path is expected
+    to contain two files 'est.csv' and 'gt.csv'. All the results and figures will also be saved in the same
+    path
 
 
-	Parameters:
-		experiment_path: the path to the model output and groundtruth. It will also be the results saving path
-		train_dataset: the name of the original train dataset or the model, must be one of 'jamendo', 'msd', or 'mtat'.
-		test_dataset: the name of the test dataset, must be one of 'jamendo', 'msd', or 'mtat'.
+    Parameters:
+        experiment_path: the path to the model output and groundtruth. It will also be the results saving path
+        train_dataset: the name of the original train dataset or the model, must be one of 'jamendo', 'msd', or 'mtat'.
+        test_dataset: the name of the test dataset, must be one of 'jamendo', 'msd', or 'mtat'.
 
 
-	Returns: 
-		results_df: a dataframe containing all the evaluation results per class. 
-	"""
-    preds = pd.read_csv(Path(experiment_path) / 'est.csv', header = None)
-    groundtruth = pd.read_csv(Path(experiment_path) / 'gt.csv',header = None)
-    
+    Returns:
+        results_df: a dataframe containing all the evaluation results per class.
+    """
+
+
+    preds = pd.read_csv(Path(experiment_path) / 'est.csv', header=None)
+    groundtruth = pd.read_csv(Path(experiment_path) / 'gt.csv', header=None)
+
     if train_dataset == 'jamendo':
         train_labels = jamendo_tags
     elif train_dataset == 'msd':
         train_labels = MSD_tags
     elif train_dataset == 'mtat':
         train_labels = MTAT_tags
-    else: 
+    else:
         print("Must enter a valid training dataset from: 'jamend', 'msd', or 'mtat'")
         return
-    
+
     if test_dataset == 'jamendo':
         test_labels = jamendo_tags
     elif test_dataset == 'msd':
         test_labels = MSD_tags
     elif test_dataset == 'mtat':
         test_labels = MTAT_tags
-    else: 
+    else:
         print("Must enter a valid test dataset from: 'jamendo', 'msd', or 'mtat'")
         return
-    
+
     # Renaming the columns with the appropraiate label
     preds.columns = ['Track'] + train_labels
     groundtruth.columns = ['Track'] + test_labels
 
     # extracting overlapping columns
     common_tags = list(set(train_labels).intersection(test_labels))
-    print("number of common tags between " + str(train_dataset) + " and " + 
-          str(test_dataset) + " is " + str(len(common_tags))) 
+    print("number of common tags between " + str(train_dataset) + " and " +
+          str(test_dataset) + " is " + str(len(common_tags)))
 
-    # Keeping only the overlapping columns 
+    # Keeping only the overlapping columns
     preds_overlap = preds[common_tags]
     groundtruth_overlap = groundtruth[common_tags]
-    
+
     # Evaluating the model
     accuracy, auc_roc, hamming_error = evaluate_model(preds_overlap,
                                                       groundtruth_overlap,
-                                                      os.path.join(experiment_path,'evaluation.txt'))
-    # Creat analysis report 
+                                                      os.path.join(experiment_path, 'evaluation.txt'))
+    # Creat analysis report
     results_df = create_analysis_report(preds_overlap.values, groundtruth_overlap.values, experiment_path, common_tags)
     return results_df
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('directory')
+    parser.add_argument('model')
+    args = parser.parse_args()
+
+    datasets = ['jamendo', 'msd', 'mtat']
+    for train_dataset in datasets:
+        for test_dataset in datasets:
+            directory = Path(args.directory) / f"test-{test_dataset}-train-{train_dataset}-{args.model}"
+            print(f'Analysing directory {directory}')
+            run_evaluation(directory, train_dataset, test_dataset)
