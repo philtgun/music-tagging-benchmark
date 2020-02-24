@@ -1,0 +1,5 @@
+Exact match accuracy is: 50.230840258541086%
+Area Under the Curve (AUC) is: 0.9086880977912923
+Micro AUC is:0.8332339868976029
+Weighted AUC is:0.88296305695648
+Hamming Loss (ratio of incorrect tags) is: 0.08388157894736842

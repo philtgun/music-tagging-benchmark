@@ -21,7 +21,7 @@ def main(config):
     elif config.model_type == 'musicnn':
         config.input_length = 3 * 16000
     elif config.model_type == 'sample' or config.model_type == 'se' or config.model_type == 'boc':
-        config.input_length = 59049
+        config.input_length = 59049  # 3.7 secs
     elif config.model_type == 'attention':
         config.input_length = 15 * 16000
 

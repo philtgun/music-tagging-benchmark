@@ -69,6 +69,7 @@ if __name__ == '__main__':
 	parser.add_argument('--input', type=str)
 	parser.add_argument('--output', type=str)
 	parser.add_argument('--dataset', type=str, choices=['mtat', 'jamendo', 'msd'])
+	parser.add_argument('--not-only-test', type=bool, default=False)
 	config = parser.parse_args()
 
 	p = Processor(config)
