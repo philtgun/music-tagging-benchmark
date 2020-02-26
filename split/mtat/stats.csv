@@ -1,0 +1,51 @@
+,train,validation,test
+ambient,1340,108,508
+beat,1392,170,344
+beats,447,45,142
+cello,491,64,20
+choir,490,10,188
+choral,356,3,131
+classic,540,40,110
+classical,3300,271,699
+country,418,56,67
+dance,434,62,153
+drums,1892,190,516
+electronic,1837,186,496
+fast,1615,195,495
+female,1050,43,381
+female vocal,470,14,160
+female voice,370,16,119
+flute,816,46,162
+guitar,3469,507,875
+harp,417,64,141
+harpsichord,862,41,189
+indian,1071,150,174
+loud,738,75,273
+male,913,102,264
+male vocal,742,94,166
+male voice,476,46,122
+man,545,61,135
+metal,286,54,165
+new age,470,32,148
+no vocal,726,77,192
+no vocals,832,81,245
+no voice,414,43,116
+opera,873,50,373
+piano,1491,98,467
+pop,744,55,196
+quiet,753,54,248
+rock,1571,236,564
+singing,855,61,295
+sitar,670,154,102
+slow,2492,249,806
+soft,687,49,249
+solo,596,71,159
+strings,2088,245,394
+synth,1273,114,330
+techno,2104,252,598
+violin,1446,149,231
+vocal,1214,80,435
+vocals,832,70,282
+voice,473,50,142
+weird,383,43,131
+woman,733,32,251
