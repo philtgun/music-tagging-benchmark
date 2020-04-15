@@ -43,12 +43,15 @@ def get_results(directory):
             if not test_dataset == train_dataset:
                 common_tags = num_tracks[test_dataset].index & num_tracks[train_dataset].index
                 df = pd.DataFrame(index=common_tags)
-                df.loc[:, 'cross_ROC-AUC'] = performance_results[model][test_dataset][train_dataset].loc[common_tags, 'AUC']
-                df.loc[:, f'train_{train_dataset}'] = num_tracks[train_dataset]['train']
+                df.loc[:, 'ROC-AUC_cross'] = performance_results[model][test_dataset][train_dataset].loc[common_tags, 'AUC']
+                df.loc[:, f'ROC-AUC_{test_dataset}'] = performance_results[model][test_dataset][test_dataset].loc[common_tags, 'AUC']
+                df.loc[:, f'ROC-AUC_{train_dataset}'] = performance_results[model][train_dataset][train_dataset].loc[common_tags, 'AUC']
+
+                df.loc[:, f'train_{test_dataset}'] = num_tracks[test_dataset]['train']
                 df.loc[:, f'test_{test_dataset}'] = num_tracks[test_dataset]['test']
 
-                df.loc[:, 'self_ROC-AUC'] = performance_results[model][test_dataset][test_dataset].loc[common_tags, 'AUC']
-                df.loc[:, f'train_{test_dataset}'] = num_tracks[test_dataset]['train']
+                df.loc[:, f'train_{train_dataset}'] = num_tracks[train_dataset]['train']
+                df.loc[:, f'test_{train_dataset}'] = num_tracks[train_dataset]['test']
 
                 output_directory = directory / 'analysis' / model
                 output_directory.mkdir(exist_ok=True)
